@@ -47,7 +47,8 @@ Parallel.prototype.refreshChart = function () {
 
         _self.dragging = {};
 
-        _self.line = d3.svg.line();
+        _self.line = d3.svg.line().interpolate("cardinal");
+
         _self.axis = d3.svg.axis().orient("left")
             .tickFormat(d3.format("s")).ticks(_self.height / 20);
 
@@ -75,7 +76,7 @@ Parallel.prototype.refreshChart = function () {
                 function (p) {
                     return +p[_self.target];
                 }))
-            .range([1, 20]);
+            .range([1, 10]);
 
         // Add blue foreground lines for focus.
         _self.parallel = _self.svg.append("g")
@@ -204,12 +205,22 @@ Parallel.prototype.refreshChart = function () {
             .text(function (d) {
                 return d;
             });
+        
+        _self.g.selectAll(".brush")
+            .each(function (d) {
+                d3.select(this).call(_self.y[d].brush = d3.svg.brush().y(_self.y[d])
+                    .on("brushstart", brushstart)
+                    .on("brushend", brush));
+            })
+            .selectAll("rect")
+            .attr("x", -8)
+            .attr("width", 16);
 
         _self.datadimension.domain(d3.extent(_self.targetData,
                 function (p) {
                     return +p[_self.target];
                 }))
-            .range([1, 20]);
+            .range([1, 10]);
 
         parallelLines.exit().remove();
 

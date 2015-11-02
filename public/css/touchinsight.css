@@ -80,7 +80,7 @@ svg {
 
 .parallel path {
     fill: none;
-    stroke-opacity: 1;
+    stroke-opacity: 0.3;
 }
 
 .brush .extent {

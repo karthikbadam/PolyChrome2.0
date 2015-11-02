@@ -215,7 +215,7 @@ Map.prototype.refreshChart = function () {
                 .style("pointer-events", "none")
                 .attr("fill", function (d) {
                     //return _self.colors(d["_id"][destination]);
-                    return d.type == source ? "#4292c6" : "#fb6a4a";
+                    return d.type == source ? "#4292c6" : "transparent";
                 })
                 .attr("cx", function (d, i) {
 
@@ -236,13 +236,14 @@ Map.prototype.refreshChart = function () {
 
                     return -10;
                 })
-                .attr("fill-opacity", 1)
-                .attr("stroke", "white")
-                .attr("stroke-width", "0.5px")
-                .attr("r", function (d) {
+                .attr("fill-opacity", 0.7)
+                .attr("stroke", function (d) {
                     //return _self.colors(d["_id"][destination]);
-                    return d.type == source ? "3px" : "6px";
-                });
+                    return d.type == source ? "transparent" : "black";
+                })
+                .attr("stroke-opacity", 0.7)
+                .attr("stroke-width", "2px")
+                .attr("r", "5px");
 
 
             _self.lasso.items(d3.selectAll("circle"));
