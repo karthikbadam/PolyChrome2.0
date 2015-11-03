@@ -213,10 +213,6 @@ Map.prototype.refreshChart = function () {
                 .enter().append("circle")
                 .attr("class", "city")
                 .style("pointer-events", "none")
-                .attr("fill", function (d) {
-                    //return _self.colors(d["_id"][destination]);
-                    return d.type == source ? "#4292c6" : "transparent";
-                })
                 .attr("cx", function (d, i) {
 
                     var s = d.name;
@@ -236,13 +232,17 @@ Map.prototype.refreshChart = function () {
 
                     return -10;
                 })
+                .attr("fill", function (d) {
+                    //return _self.colors(d["_id"][destination]);
+                    return d.type == source ? "#4292c6" : "transparent";
+                })
                 .attr("fill-opacity", 0.7)
                 .attr("stroke", function (d) {
                     //return _self.colors(d["_id"][destination]);
-                    return d.type == source ? "transparent" : "black";
+                    return d.type == source ? "transparent" : "#222";
                 })
                 .attr("stroke-opacity", 0.7)
-                .attr("stroke-width", "2px")
+                .attr("stroke-width", "1px")
                 .attr("r", "5px");
 
 
@@ -348,10 +348,6 @@ Map.prototype.refreshChart = function () {
             .transition().delay(1000)
             .attr("class", "city")
             .style("pointer-events", "none")
-            .attr("fill", function (d) {
-                //return _self.colors(d["_id"][destination]);
-                return d.type == source ? "#4292c6" : "#fb6a4a";
-            })
             .attr("cx", function (d, i) {
 
                 var s = d.name;
@@ -371,12 +367,18 @@ Map.prototype.refreshChart = function () {
 
                 return -10;
             })
-            .attr("fill-opacity", 1)
-            .attr("stroke", "white")
-            .attr("stroke-width", "0.5px")
-            .attr("r", function (d) {
-                return d.type == source ? "3px" : "6px";
-            });
+            .attr("fill", function (d) {
+                //return _self.colors(d["_id"][destination]);
+                return d.type == source ? "#4292c6" : "transparent";
+            })
+            .attr("fill-opacity", 0.7)
+            .attr("stroke", function (d) {
+                //return _self.colors(d["_id"][destination]);
+                return d.type == source ? "transparent" : "#222";
+            })
+            .attr("stroke-opacity", 0.7)
+            .attr("stroke-width", "1px")
+            .attr("r", "5px");
 
         cityCircles.attr("cx", function (d, i) {
 
@@ -397,16 +399,18 @@ Map.prototype.refreshChart = function () {
 
                 return -10;
             })
-            .attr("fill-opacity", 1)
-            .attr("stroke", "white")
-            .attr("stroke-width", "0.5px")
-            .attr("r", function (d) {
-                return d.type == source ? "3px" : "6px";
-            })
             .attr("fill", function (d) {
                 //return _self.colors(d["_id"][destination]);
-                return d.type == source ? "#4292c6" : "#fb6a4a";
-            });
+                return d.type == source ? "#4292c6" : "transparent";
+            })
+            .attr("fill-opacity", 0.7)
+            .attr("stroke", function (d) {
+                //return _self.colors(d["_id"][destination]);
+                return d.type == source ? "transparent" : "#222";
+            })
+            .attr("stroke-opacity", 0.7)
+            .attr("stroke-width", "1px")
+            .attr("r", "5px");
 
 
         _self.lasso.items(d3.selectAll("circle"));
@@ -1202,7 +1206,7 @@ Map.prototype.reDrawChart = function (flag, width, height) {
 
         //_self.svg = null;
 
-        device == 1 ? _self.refreshMicroViz() : _self.refreshThumbnail();
+        device == "MOBILE" ? _self.refreshMicroViz() : _self.refreshThumbnail();
 
     }
 
@@ -1224,12 +1228,12 @@ Map.prototype.postUpdate = function () {
 
         _self.targetData = JSON.parse(data);
 
-        if (device == 0) {
+        if (device == "DESKTOP") {
             _self.refreshChart();
             return;
         }
 
-        if (device == 1) {
+        if (device == "MOBILE") {
             if (_self.parentId == "div" + mainView[0] + "" + mainView[1]) {
 
                 _self.refreshChart();
@@ -1240,7 +1244,7 @@ Map.prototype.postUpdate = function () {
             }
         }
 
-        if (device == 2) {
+        if (device == "MOBILE2") {
             if (_self.parentId == "div" + mainView[0] + "" + mainView[1]) {
 
                 _self.refreshChart();

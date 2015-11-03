@@ -37,7 +37,7 @@
         });
 
         // Compute the new x- and y-scales, and transform.
-        var x1 = d3.scale.linear().domain([parseDate("199001"), parseDate("200912")]).range([0, width]),
+        var x1 = d3.scale.linear().domain([parseDate("1990"), parseDate("2009")]).range([0, width]),
             y1 = d3.scale.linear().domain([0, yMax]).range([0, height * bands]),
             t1 = d3_horizonTransform(bands, height, mode);
 

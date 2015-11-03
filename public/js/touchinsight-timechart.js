@@ -590,7 +590,7 @@ TimeChart.prototype.reDrawChart = function (flag, width, height) {
 
     } else {
 
-        device == 1 ? _self.refreshMicroViz() : _self.refreshThumbnail();
+        device == "MOBILE" ? _self.refreshMicroViz() : _self.refreshThumbnail();
 
     }
 
@@ -613,12 +613,12 @@ TimeChart.prototype.postUpdate = function () {
 
         _self.targetData = JSON.parse(data);
 
-        if (device == 0) {
+        if (device == "DESKTOP") {
             _self.refreshChart();
             return;
         }
 
-        if (device == 1) {
+        if (device == "MOBILE") {
             if (_self.parentId == "div" + mainView[0] + "" + mainView[1]) {
 
                 _self.refreshChart();
@@ -629,7 +629,7 @@ TimeChart.prototype.postUpdate = function () {
             }
         }
 
-        if (device == 2) {
+        if (device == "MOBILE2") {
             if (_self.parentId == "div" + mainView[0] + "" + mainView[1]) {
 
                 _self.refreshChart();

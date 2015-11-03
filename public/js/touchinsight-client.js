@@ -10,7 +10,7 @@ var date = "Date";
 var sourcePopulation = "SPopulation";
 var destPopulation = "DPopulation";
 
-var device = 0;
+var device = "DESKTOP";
 
 var dataFile = "data/flights.csv";
 
@@ -39,19 +39,19 @@ var queryStack = [];
 
 var historyQueryStack = [];
 
+var svgs = [];
+
+var mainView = [1, 1];
+
+var THUMBNAIL_SCALE = 0.6;
+
+
 function setGlobalQuery(query, propagate) {
 
     var currQuery = query;
-    
+
     var prevQuery = queryStack[queryStack.length - 1];
-    
-//    if (prevQuery && prevQuery.logic== "AND" && prevQuery.index == query.index) {
-//        query.logic = "OR";   
-//        prevQuery.logic = "OR"; 
-//        queryStack[queryStack.length -  1] = prevQuery;
-//
-//    }
-    
+
     queryStack.push(query.getQueryString());
 
     for (var i = queryStack.length - 1; i >= 0; i--) {
@@ -82,7 +82,18 @@ function setGlobalQuery(query, propagate) {
 
 }
 
+var justStarted = true;
+
 $(document).ready(function () {
+
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
+        .test(navigator.userAgent)) {
+
+        device = "MOBILE";
+
+    } else {
+        device = "DESKTOP";
+    }
 
     // creating the four buttons
     for (var i = 0; i < buttons.length; i++) {
@@ -102,7 +113,8 @@ $(document).ready(function () {
 
                 console.log(this.textContent + " is clicked");
 
-                $(this).toggleClass('active').siblings().removeClass('active');
+                $(this).toggleClass('active').siblings()
+                    .removeClass('active');
 
                 currentLogic = this.textContent;
 
@@ -118,8 +130,31 @@ $(document).ready(function () {
                     });
 
                     setGlobalQuery(query, 1);
-                    
+
                     $(this).toggleClass('active');
+                }
+
+                if (justStarted) {
+                    document.fullscreenEnabled = document.fullscreenEnabled ||
+                        document.mozFullScreenEnabled ||
+                        document.documentElement.webkitRequestFullScreen;
+
+                    function requestFullscreen(element) {
+                        if (element.requestFullscreen) {
+                            element.requestFullscreen();
+                        } else if (element.mozRequestFullScreen) {
+                            element.mozRequestFullScreen();
+                        } else if (element.webkitRequestFullScreen) {
+                            element.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+                        }
+                    }
+
+                    if (document.fullscreenEnabled) {
+                        requestFullscreen(document.getElementsByTagName("body")[0]);
+                    }
+                    
+                    justStarted = false;
+
                 }
             });
     }
@@ -147,13 +182,71 @@ $(document).ready(function () {
             }
         }
 
-        createLayout();
+        if (device == "MOBILE") {
+
+            createMobileLayout();
+
+        } else {
+
+            createLayout();
+
+        }
+
 
         onDataLoaded();
 
     });
 
 });
+
+function reDrawInterface() {
+
+    var prevL = l;
+
+    l = getDimensions(mainView[0], mainView[1]);
+
+    for (var i = 0; i < GRID[1]; i++) {
+
+        for (var j = 0; j < GRID[0]; j++) {
+
+            if (l[i][j] != 0) {
+
+                d3.select("#div" + i + j)
+                    .style("width", l[i][j]["width"] - PADDING / 2)
+                    .style("height", l[i][j]["height"] - PADDING / 2)
+                    .style("background-color",
+                        "white")
+                    .style("border", "1px solid #222")
+                    .style("opacity", 1)
+                    .style("margin", PADDING / 2 - 4)
+                    .style("overflow", "hidden")
+                    .style("display", "inline-block");
+
+                if (i == mainView[0] && j == mainView[1]) {
+
+                    svgs[i][j].reDrawChart(1, $("#div" + i + j).width(),
+                        $("#div" + i + j).height());
+
+                } else {
+                    if (prevL[i][j] == 0)
+                        svgs[i][j].postUpdate();
+
+                    svgs[i][j].reDrawChart(0, $("#div" + i + j).width(),
+                        $("#div" + i + j).height());
+
+                }
+
+            } else {
+
+                d3.select("#div" + i + j)
+                    .style("display", "none");
+
+            }
+        }
+    }
+
+
+}
 
 function onDataLoaded() {
 
@@ -165,6 +258,8 @@ function onDataLoaded() {
         height: $("#div11").height(),
     });
 
+    svgs[1][1] = geomap;
+
     timechart = new TimeChart({
         parentId: "div21",
         cols: [source, destination],
@@ -174,6 +269,8 @@ function onDataLoaded() {
         link: "getFlightsByTime",
         text: "Flights"
     });
+
+    svgs[2][1] = timechart;
 
     passengerchart = new TimeChart({
         parentId: "div01",
@@ -185,14 +282,18 @@ function onDataLoaded() {
         text: "Passengers"
     });
 
+    svgs[0][1] = passengerchart;
+
     flightdistance = new Parallel({
         parentId: "div10",
         cols: [source, destination],
         width: $("#div10").width(),
         height: $("#div10").height(),
         link: "getFlightDistances",
-        target: "Passengers"
+        target: passengers
     });
+
+    svgs[1][0] = flightdistance;
 
     passengerseats = new Parallel({
         parentId: "div12",
@@ -200,8 +301,10 @@ function onDataLoaded() {
         width: $("#div12").width(),
         height: $("#div12").height(),
         link: "getPassengerSeats",
-        target: "Flights"
+        target: numFlights
     });
+
+    svgs[1][2] = passengerseats;
 
     distancebar = new Bar({
         parentId: "div00",
@@ -213,6 +316,8 @@ function onDataLoaded() {
         text: "Average Distance"
     });
 
+    svgs[0][0] = distancebar;
+
     populationbar = new Bar({
         parentId: "div22",
         cols: [source, destination],
@@ -222,6 +327,8 @@ function onDataLoaded() {
         link: "getPopulationBySource",
         text: "Population"
     });
+
+    svgs[2][2] = populationbar;
 
     flightsbar = new Bar({
         parentId: "div20",
@@ -233,6 +340,8 @@ function onDataLoaded() {
         text: "Flights"
     });
 
+    svgs[2][0] = flightsbar;
+
     passengersbar = new Bar({
         parentId: "div02",
         cols: [source, destination],
@@ -242,6 +351,9 @@ function onDataLoaded() {
         link: "getPassengersBySource",
         text: "Passengers"
     });
+
+    svgs[0][2] = passengersbar;
+
 }
 
 function createLayout() {
@@ -251,9 +363,13 @@ function createLayout() {
     var xWeights = getWeights(GRID[1]);
     var yWeights = getWeights(GRID[0]);
 
-    for (var i = 0; i < GRID[0]; i++) {
+    svgs = new Array(GRID[1]);
 
-        for (var j = 0; j < GRID[1]; j++) {
+    for (var i = 0; i < GRID[1]; i++) {
+
+        svgs[i] = new Array(GRID[0]);
+
+        for (var j = 0; j < GRID[0]; j++) {
 
             d3.select("#content").append("div")
                 .attr("id", "div" + i + j)
@@ -295,5 +411,143 @@ function getWeights(size) {
     }
 
     return weights;
+
+}
+
+function createMobileLayout() {
+
+    //GRID[1] = GRID[0];
+
+    l = getDimensions(1, 1);
+
+    svgs = new Array(GRID[1]);
+
+    for (var i = 0; i < GRID[1]; i++) {
+
+        svgs[i] = new Array(GRID[0]);
+
+        for (var j = 0; j < GRID[0]; j++) {
+
+            if (l[i][j] != 0) {
+
+                d3.select("#content").append("div")
+                    .attr("id", "div" + i + j)
+                    .attr("class", "panel")
+                    .style("width", l[i][j]["width"] - PADDING / 2)
+                    .style("height", l[i][j]["height"] - PADDING / 2)
+                    .style("background-color",
+                        "white")
+                    .style("border", "1px solid #222")
+                    .style("opacity", 1)
+                    .style("margin", PADDING / 2 - 4)
+                    .style("overflow", "hidden");
+
+            }
+
+        }
+    }
+
+}
+
+function getDimensions(mainVIndex, mainHIndex) {
+
+
+    var layOut = new Array(GRID[1]);
+
+    for (var i = 0; i < GRID[1]; i++) {
+
+        layOut[i] = new Array(GRID[0]);
+
+        for (var j = 0; j < GRID[0]; j++) {
+            layOut[i][j] = 0;
+        }
+    }
+
+    //calculating number on top, number on bottom, left, and right
+    bottom = GRID[1] - 1 - mainVIndex;
+    bottomExists = bottom > 0 ? 1 : 0;
+
+    topI = mainVIndex;
+    topExists = topI > 0 ? 1 : 0;
+
+    left = mainHIndex;
+    leftExists = left > 0 ? 1 : 0;
+
+    right = GRID[0] - 1 - mainHIndex;
+    rightExists = right > 0 ? 1 : 0;
+
+    var PROPORTIONS = 15;
+
+    //assigning the dimensions to the main view
+    layOut[mainVIndex][mainHIndex] = {
+        width: (PROPORTIONS - left - right) * width / PROPORTIONS,
+        height: (PROPORTIONS - topI - bottom) * height / PROPORTIONS
+    };
+
+    //assigning the top or bottom
+    if (topI != 0) {
+
+        layOut[mainVIndex - 1][mainHIndex] = {
+            width: width / (leftExists + rightExists + 1),
+            height: topI * height / PROPORTIONS
+        };
+
+        if (leftExists) {
+            layOut[mainVIndex - 1][mainHIndex - 1] = {
+                width: width / (leftExists + rightExists + 1),
+                height: topI * height / PROPORTIONS
+            };
+        }
+
+        if (rightExists) {
+            layOut[mainVIndex - 1][mainHIndex + 1] = {
+                width: width / (leftExists + rightExists + 1),
+                height: topI * height / PROPORTIONS
+            };
+        }
+
+    }
+
+    if (bottom != 0) {
+
+        layOut[mainVIndex + 1][mainHIndex] = {
+            width: width / (leftExists + rightExists + 1),
+            height: bottom * height / PROPORTIONS
+        };
+
+        if (leftExists) {
+            layOut[mainVIndex + 1][mainHIndex - 1] = {
+                width: width / (leftExists + rightExists + 1),
+                height: bottom * height / PROPORTIONS
+            };
+        }
+
+        if (rightExists) {
+            layOut[mainVIndex + 1][mainHIndex + 1] = {
+                width: width / (leftExists + rightExists + 1),
+                height: bottom * height / PROPORTIONS
+            };
+        }
+    }
+
+
+    if (left != 0) {
+
+        layOut[mainVIndex][mainHIndex - 1] = {
+            width: left * width / PROPORTIONS,
+            height: (PROPORTIONS - topI - bottom) * height / PROPORTIONS
+        };
+
+    }
+
+    if (right != 0) {
+
+        layOut[mainVIndex][mainHIndex + 1] = {
+            width: right * width / PROPORTIONS,
+            height: (PROPORTIONS - topI - bottom) * height / PROPORTIONS
+        };
+    }
+
+    return layOut;
 
 }
