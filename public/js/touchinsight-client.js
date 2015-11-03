@@ -97,6 +97,7 @@ function setGlobalQuery(query, propagate) {
     }
 }
 
+
 var justStarted = true;
 
 function compareObjects(q1, q2) {
