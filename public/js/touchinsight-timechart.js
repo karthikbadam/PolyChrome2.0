@@ -162,7 +162,7 @@ TimeChart.prototype.refreshChart = function () {
             var rightMonth = right.getMonth() < 10 ? "0" + right.getMonth().toString() : right.getMonth().toString();
 
             //right = rightYear + rightMonth;
-            right = rightYear
+            right = rightYear;
 
             console.log(left + ", " + right);
 

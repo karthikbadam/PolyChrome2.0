@@ -47,6 +47,22 @@ var THUMBNAIL_SCALE = 0.6;
 
 var polychrome;
 
+var startTime = Date.now();
+
+function randomString(len, charSet) {
+    len = len || 10;
+    charSet = charSet || 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    var randomString = '';
+    for (var i = 0; i < len; i++) {
+        var randomPoz = Math.floor(Math.random() * charSet.length);
+        randomString += charSet.substring(randomPoz, randomPoz + 1);
+    }
+    return randomString;
+}
+
+
+var deviceId = randomString();
+
 
 function setGlobalQuery(query, propagate) {
 
@@ -128,13 +144,7 @@ $(document).ready(function () {
 
     var options = {};
 
-    options.callback = function (query) {
-
-        if (compareObjects(query, 
-                           queryStack[queryStack.length - 1])) {
-
-            return;
-        }
+    options.callback = function (query, time, hostDevice) {
 
         if (device == "MOBILE") {
 
@@ -149,7 +159,6 @@ $(document).ready(function () {
                     }
                 }
             }
-
         }
     }
 
