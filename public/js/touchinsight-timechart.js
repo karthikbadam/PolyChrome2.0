@@ -155,12 +155,14 @@ TimeChart.prototype.refreshChart = function () {
             var leftYear = left.getFullYear().toString();
             var leftMonth = left.getMonth() < 10 ? "0" + left.getMonth().toString() : left.getMonth().toString();
 
-            left = leftYear + leftMonth;
-
+            //left = leftYear + leftMonth;
+            left = leftYear;
+            
             var rightYear = right.getFullYear().toString();
             var rightMonth = right.getMonth() < 10 ? "0" + right.getMonth().toString() : right.getMonth().toString();
 
-            right = rightYear + rightMonth;
+            //right = rightYear + rightMonth;
+            right = rightYear
 
             console.log(left + ", " + right);
 
@@ -597,7 +599,7 @@ TimeChart.prototype.reDrawChart = function (flag, width, height) {
 
 }
 
-TimeChart.prototype.postUpdate = function () {
+TimeChart.prototype.postUpdate = function (cquery) {
 
     var _self = this;
 
@@ -606,7 +608,7 @@ TimeChart.prototype.postUpdate = function () {
         type: "GET",
         url: "/" + _self.link,
         data: {
-            data: queryStack
+            data: cquery? cquery: queryStack
         }
 
     }).done(function (data) {

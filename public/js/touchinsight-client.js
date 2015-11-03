@@ -45,6 +45,8 @@ var mainView = [1, 1];
 
 var THUMBNAIL_SCALE = 0.6;
 
+var polychrome;
+
 
 function setGlobalQuery(query, propagate) {
 
@@ -67,6 +69,7 @@ function setGlobalQuery(query, propagate) {
 
     historyQueryStack.push(query);
 
+
     // update all other visualizations
     if (propagate) {
         geomap.postUpdate();
@@ -80,9 +83,36 @@ function setGlobalQuery(query, propagate) {
         populationbar.postUpdate();
     }
 
+    //syncing between devices
+    var dquery = new Query({
+        index: "Date",
+        value: ["1990", "2009"],
+        operator: "range",
+        logic: "CLEAN"
+    }).getQueryString();
+
+    if (JSON.stringify(query.getQueryString()) !=
+        JSON.stringify(dquery)) {
+        polychrome.push(query.getQueryString());
+    }
 }
 
 var justStarted = true;
+
+function compareObjects(q1, q2) {
+
+    if (q1.index == q2.index) {
+        if (q1.logic == q2.logic) {
+            if (q1.operator == q2.operator) {
+                //if (q1.value == q2.value) {
+                    return true;
+                //}
+            }
+        }
+    }
+    
+    return false;
+}
 
 $(document).ready(function () {
 
@@ -94,6 +124,35 @@ $(document).ready(function () {
     } else {
         device = "DESKTOP";
     }
+
+    var options = {};
+
+    options.callback = function (query) {
+
+        if (compareObjects(query, 
+                           queryStack[queryStack.length - 1])) {
+
+            return;
+        }
+
+        if (device == "MOBILE") {
+
+            svgs[mainView[0]][mainView[1]].postUpdate([query]);
+
+        } else {
+
+            for (var i = 0; i < GRID[1]; i++) {
+                for (var j = 0; j < GRID[0]; j++) {
+                    if (svgs[i][j]) {
+                        svgs[i][j].postUpdate([query]);
+                    }
+                }
+            }
+
+        }
+    }
+
+    polychrome = new Sync(options);
 
     // creating the four buttons
     for (var i = 0; i < buttons.length; i++) {
@@ -152,7 +211,7 @@ $(document).ready(function () {
                     if (document.fullscreenEnabled) {
                         requestFullscreen(document.getElementsByTagName("body")[0]);
                     }
-                    
+
                     justStarted = false;
 
                 }

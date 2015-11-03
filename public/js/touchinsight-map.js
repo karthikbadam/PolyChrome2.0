@@ -1213,7 +1213,7 @@ Map.prototype.reDrawChart = function (flag, width, height) {
 
 }
 
-Map.prototype.postUpdate = function () {
+Map.prototype.postUpdate = function (cquery) {
 
     var _self = this;
 
@@ -1222,7 +1222,7 @@ Map.prototype.postUpdate = function () {
         type: "GET",
         url: "/getFlightCounts",
         data: {
-            data: queryStack
+            data: cquery? cquery: queryStack
         }
     }).done(function (data) {
 

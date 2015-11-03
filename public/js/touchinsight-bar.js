@@ -1025,7 +1025,7 @@ Bar.prototype.reDrawChart = function (flag, width, height) {
 
 }
 
-Bar.prototype.postUpdate = function () {
+Bar.prototype.postUpdate = function (cquery) {
 
     var _self = this;
 
@@ -1034,7 +1034,7 @@ Bar.prototype.postUpdate = function () {
         type: "GET",
         url: "/" + _self.link,
         data: {
-            data: queryStack
+            data: cquery? cquery: queryStack
         }
 
     }).done(function (data) {

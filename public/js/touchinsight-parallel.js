@@ -694,7 +694,7 @@ Parallel.prototype.reDrawChart = function (flag, width, height) {
 
 }
 
-Parallel.prototype.postUpdate = function () {
+Parallel.prototype.postUpdate = function (cquery) {
 
     var _self = this;
 
@@ -703,7 +703,7 @@ Parallel.prototype.postUpdate = function () {
         type: "GET",
         url: "/" + _self.link,
         data: {
-            data: queryStack
+            data: cquery? cquery: queryStack
         }
 
     }).done(function (data) {
