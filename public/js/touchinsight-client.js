@@ -122,14 +122,18 @@ function compareObjects(q1, q2) {
         if (q1.logic == q2.logic) {
             if (q1.operator == q2.operator) {
                 //if (q1.value == q2.value) {
-                    return true;
+                return true;
                 //}
             }
         }
     }
-    
+
     return false;
 }
+
+//function getip(json) {
+//    alert(json.ip); // alerts the ip address
+//}
 
 $(document).ready(function () {
 

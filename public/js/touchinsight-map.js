@@ -58,6 +58,10 @@ Map.prototype.refreshChart = function () {
             .attr("id", "choropleth")
             .attr("width", _self.width + _self.margin.left + _self.margin.right)
             .attr("height", _self.height + _self.margin.top + _self.margin.bottom);
+        
+        var div = _self.div = d3.select("#" + _self.parentId).append("div")	
+            .attr("class", "tooltip")				
+            .style("opacity", 0);
 
         // Create the area where the lasso event can be triggered
         var lasso_area = _self.svg.append("rect")
@@ -243,7 +247,22 @@ Map.prototype.refreshChart = function () {
                 })
                 .attr("stroke-opacity", 0.7)
                 .attr("stroke-width", "1px")
-                .attr("r", "5px");
+                .attr("r", "5px")
+                .on("mouseover", function (d) {
+                    _self.div.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    
+                    _self.div.html(d.name)
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 28) +
+                               "px");
+                })
+                .on("mouseout", function (d) {
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                });
 
 
             _self.lasso.items(d3.selectAll("circle"));
@@ -1222,7 +1241,7 @@ Map.prototype.postUpdate = function (cquery) {
         type: "GET",
         url: "/getFlightCounts",
         data: {
-            data: cquery? cquery: queryStack
+            data: cquery ? cquery : queryStack
         }
     }).done(function (data) {
 
