@@ -147,10 +147,7 @@ Map.prototype.refreshChart = function () {
                     "not_possible": false,
                     "possible": false
                 })
-                .attr("r", function (d) {
-                    //return _self.colors(d["_id"][destination]);
-                    return d.type == source ? "3px" : "6px";
-                });
+                .attr("r", "3px");
 
         };
 
@@ -247,7 +244,7 @@ Map.prototype.refreshChart = function () {
                 })
                 .attr("stroke-opacity", 0.7)
                 .attr("stroke-width", "1px")
-                .attr("r", "5px")
+                .attr("r", "3px")
                 .on("mouseover", function (d) {
                     _self.div.transition()
                         .duration(200)
@@ -397,7 +394,7 @@ Map.prototype.refreshChart = function () {
             })
             .attr("stroke-opacity", 0.7)
             .attr("stroke-width", "1px")
-            .attr("r", "5px");
+            .attr("r", "3px");
 
         cityCircles.attr("cx", function (d, i) {
 
@@ -429,7 +426,7 @@ Map.prototype.refreshChart = function () {
             })
             .attr("stroke-opacity", 0.7)
             .attr("stroke-width", "1px")
-            .attr("r", "5px");
+            .attr("r", "3px");
 
 
         _self.lasso.items(d3.selectAll("circle"));

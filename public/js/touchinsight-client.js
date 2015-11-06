@@ -207,28 +207,28 @@ $(document).ready(function () {
                     $(this).toggleClass('active');
                 }
 
-                if (justStarted) {
-                    document.fullscreenEnabled = document.fullscreenEnabled ||
-                        document.mozFullScreenEnabled ||
-                        document.documentElement.webkitRequestFullScreen;
-
-                    function requestFullscreen(element) {
-                        if (element.requestFullscreen) {
-                            element.requestFullscreen();
-                        } else if (element.mozRequestFullScreen) {
-                            element.mozRequestFullScreen();
-                        } else if (element.webkitRequestFullScreen) {
-                            element.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
-                        }
-                    }
-
-                    if (document.fullscreenEnabled) {
-                        requestFullscreen(document.getElementsByTagName("body")[0]);
-                    }
-
-                    justStarted = false;
-
-                }
+//                if (justStarted) {
+//                    document.fullscreenEnabled = document.fullscreenEnabled ||
+//                        document.mozFullScreenEnabled ||
+//                        document.documentElement.webkitRequestFullScreen;
+//
+//                    function requestFullscreen(element) {
+//                        if (element.requestFullscreen) {
+//                            element.requestFullscreen();
+//                        } else if (element.mozRequestFullScreen) {
+//                            element.mozRequestFullScreen();
+//                        } else if (element.webkitRequestFullScreen) {
+//                            element.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+//                        }
+//                    }
+//
+//                    if (document.fullscreenEnabled) {
+//                        requestFullscreen(document.getElementsByTagName("body")[0]);
+//                    }
+//
+//                    justStarted = false;
+//
+//                }
             });
     }
 
